@@ -1,11 +1,8 @@
 <template>
   <div class="hello">
     <h1>Create Product</h1>
-    <input type="text" name="name" v-model="fields.name" :class="class.name">
-    <div class="error" v-if="errors.name">
-      {{ errors.first('name') }}
-    </div>
-    <button type="submit" @click="submit" :disabled="errors.failedAttempt">Create Product</button>
+    <input type="text" name="name" v-model="name">
+    <span>Text: {{ name }}</span>
   </div>
 </template>
 
@@ -14,27 +11,11 @@ import product from '../forms/product'
 
 export default {
   name: 'hello',
-  data () {
-    return {
-      fields: {
-        ...product.fields()
-      },
-      classes: {
-        ...product.classes()
-      },
-      errors: {
-        ...product.errors()
-      }
-    }
+  computed: {
+    ...product.fields()
   },
   methods: {
-    submit () {
-      product.validate().then(() => {
-        this.createProduct(this.product)
-      }).catch(() => {
-        console.log('invalid input')
-      })
-    }
+
   }
 }
 </script>
