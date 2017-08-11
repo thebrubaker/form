@@ -1,8 +1,13 @@
 <template>
   <div class="hello">
     <h1>Create Product</h1>
-    <input type="text" name="name" v-model="name">
-    <span>Text: {{ name }}</span>
+    <input type="text" v-model="fields.name" :class="classes.name">
+    <span>Name: {{ fields.name }}</span>
+<!--     <div v-if="errors.has('name')">
+      {{ errors.first('name') }}
+    </div> -->
+    <input type="text" v-model="fields.sku" :class="classes.name">
+    <span>Sku: {{ fields.sku }}</span>
   </div>
 </template>
 
@@ -11,8 +16,14 @@ import product from '../forms/product'
 
 export default {
   name: 'hello',
+  data () {
+    return {
+      fields: product.fields,
+      classes: product.classes
+    }
+  },
   computed: {
-    ...product.fields()
+
   },
   methods: {
 

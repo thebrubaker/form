@@ -1,5 +1,7 @@
-let fields = Symbol('fields')
 import Vue from 'vue'
+
+let fields = Symbol['fields']
+let classes = Symbol['classes']
 
 export default class Form {
 
@@ -10,15 +12,35 @@ export default class Form {
    */
   constructor (options) {
     this.options = options
+    this.setClasses(options)
     this.setFields(options)
+  }
+
+  /**
+   * Return the fields for the form.
+   * @return {Object}
+   */
+  get fields () {
+    return Object.keys(this.options.fields).reduce((carry, key) => {
+      carry[key] = this[fields][key]
+      return carry
+    }, {})
+  }
+
+  /**
+   * Return the fields for the form.
+   * @return {Object}
+   */
+  get classes () {
+    return this[classes]
   }
 
   /**
    * Return the form's fields.
    * @return {Object}
    */
-  fields () {
-    return Object.keys(this.options.fields).reduce((computed, key) => {
+  mapFields (keys = null) {
+    return (keys || Object.keys(this.options.fields)).reduce((computed, key) => {
       computed[key] = {
         get: () => {
           return this[fields][key]
@@ -36,6 +58,8 @@ export default class Form {
    * @param {object} options.fields
    */
   setFields (options) {
+    let form = this
+
     if (!options.fields) {
       return console.error('You did not specify fields on your Form.')
     }
@@ -47,9 +71,9 @@ export default class Form {
         },
         set (value) {
           this.fields[key].value = value
-          this.fields[key].isValid = true
-          this.fields[key].isModified = value !== this.fields[key].originalValue
-          this.fields[key].isDirty = true
+          form[classes][key].valid = true
+          form[classes][key].modified = value !== this.fields[key].originalValue
+          form[classes][key].dirty = true
         }
       }
 
@@ -65,10 +89,7 @@ export default class Form {
         Object.keys(options.fields).forEach(key => {
           data.fields[key] = {
             value: '',
-            originalValue: '',
-            isValid: false,
-            isModified: false,
-            isDirty: false
+            originalValue: ''
           }
         })
 
@@ -76,5 +97,36 @@ export default class Form {
       },
       computed
     })
+  }
+
+  /**
+   * Set the fields for the form.
+   * @param {object} options.fields
+   */
+  setClasses (options) {
+    if (!options.fields) {
+      return console.error('You did not specify fields on your Form.')
+    }
+
+    this[classes] = new Vue({
+      data () {
+        return Object.keys(options.fields).reduce((carry, key) => {
+          carry[key] = {
+            valid: false,
+            modified: false,
+            dirty: false
+          }
+          return carry
+        }, {})
+      }
+    })
+  }
+
+  /**
+   * Return the form's classes.
+   * @return {Object}
+   */
+  mapClasses (keys = null) {
+
   }
 }
